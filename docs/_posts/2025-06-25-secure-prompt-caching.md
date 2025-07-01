@@ -1,6 +1,6 @@
 ---
 title: "Secure Prompt Caching for Fast AI Inference"
-date: 2025-07-01
+date: 2025-06-25
 layout: post
 ---
 
