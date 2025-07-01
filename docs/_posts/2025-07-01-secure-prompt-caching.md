@@ -8,9 +8,9 @@ layout: post
 
 Large language models (LLMs) have evolved into **stateful systems that retain conversation history in memory** to deliver responses faster and more efficiently. This is possible with prompt caching, a mechanism that keeps the LLM's internal state on the server in memory, thereby avoiding recomputation of the state on every request.
 
-> _Prompt caching is a recent advancement in LLM inference and is the default among service providers. It is crucial for fast responses in multi-turn conversations and agentic systems. But storing context on the server introduces a security risk._
+> _Prompt caching is a performance optimization in LLM inference and is the default among service providers. It is crucial for fast responses in multi-turn conversations and agentic systems. But storing context on the server introduces a security risk._
 
-[Privatemode](https://www.privatemode.ai/) is the first AI inference service to support prompt caching with verifiable security, thanks to confidential computing and public source code. In this post we explain how we do it.
+[Privatemode](https://www.privatemode.ai/) is the first AI inference service to support prompt caching with verifiable security, thanks to [confidential computing](https://www.edgeless.systems/wiki/what-is-confidential-computing/) and public source code. In this post we explain how we do it.
 
 ## Background: What are KV Cache and Prompt Caching?
 The [transformer architecture](https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf) introduced [_attention_](https://en.m.wikipedia.org/wiki/Attention_(machine_learning)) as a key mechanism for the model to understand the relative importance of input tokens in LLM inference. To compute attention for a token, so called _Key_ and _Value_ vectors of all other tokens must be computed, which is the main cause of latency when processing queries with large context.
@@ -67,7 +67,7 @@ With prompt caching enabled, we can accelerate AI inference for agentic workload
 The results are striking, prompt caching minimizes response latency, especially with large contexts. Processing a document with 10,000 tokens (about 6,000 words or 12 pages of text) takes about 9 seconds without prompt caching. Every follow-up question to the model would also take 9 seconds or longer without the cache. With prompt caching enabled, this delay is eliminated by using cached attention inputs, allowing the model to start responding immediately after one second.
 
 
-## Flexible and Collaborative Prompt Caching with Privatemode AI
+## Flexible and Collaborative Prompt Caching in Privatemode AI
 
 Our implementation of prompt caching in Privatemode not only ensures the confidentiality of conversations for individual users but also enables granular configuration of a cache shared among trusted groups of users. This enables our customers to more effectively scale agentic workloads and other use cases across multiple users.
 
