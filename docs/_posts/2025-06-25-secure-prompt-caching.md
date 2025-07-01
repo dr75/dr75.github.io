@@ -31,7 +31,7 @@ While confidential computing protects data even during inference, it does not el
 
 Privatemode uses [vLLM](http://docs.vllm.ai/en/stable/), a high-speed LLM inference engine. To use prompt caching, we had to protect vLLM’s [prefix cache](https://docs.vllm.ai/en/stable/features/automatic_prefix_caching.html) (its implementation of a prompt cache), against such side-channel leaks. We found that the cache [introduces measurable differences in response times](https://github.com/vllm-project/vllm/security/advisories/GHSA-4qjh-9fv9-r85r) between cache hits and cache misses. This timing gap becomes an attack surface: An attacker using the same backend could craft inputs and measure response times to determine whether a specific prompt has been seen before. This allows them to reconstruct a prompt step by step.
 
-## The Attack Scenario
+## The Attack
 Let’s walk through a concrete attack scenario. Imagine an attacker who has access to the inference system you are using. This could be the service provider of the system, an administrator of a self-hosted system, or another regular user. If using confidential computing, they can’t read memory directly, which already covers many threats. With prompt caching, they can interact with the service and measure response times to extract the prompt of another user.
 
 Here is how they would do it: The attacker begins by determining the length of the system prompt, for example, by examining token usage or measuring response times for their own requests with increasing lengths. Once the length of the system prompt is known, they can start to infer the prompt content. Assuming the cache operates in blocks of 16 tokens, the attacker needs to infer those 16 tokens, or ~10 words. This lets them test one block at a time.
@@ -44,7 +44,7 @@ This timing difference—sometimes as much as 15 ms on an NVIDIA H100 with Llama
 
 This isn’t just a theoretical risk. [Research has shown](https://arxiv.org/html/2411.18191v1) that these attacks are effective in practice, exposing sensitive medical data. Attackers don’t need privileged access: They might be outsiders probing a public API, or insiders within your own organization, inferring patient records, legal documents, or other confidential messages recently handled by the system.
 
-## Prevent Side Channel Attacks
+## The Defense
 To address the issue, we developed vLLMs [cache salting](https://github.com/vllm-project/vllm/issues/16016) mechanism, which separates prompt caches of different users. When prompts are stored or looked up in the cache, a secret, user-provided “salt” is added[^1], making otherwise identical inputs appear unique to the cache unless the user has permission. It is like providing random inputs in front of your prompt such that it becomes infeasible to infer it, except that we do it for every block, protecting the entire prompt.
 
 [^1]: Note that the cache salt here is not just a typical cryptographic salt; it also protects the contents of the prompt. For this reason, it must remain secret, unlike conventional salts that do not need to be kept confidential.
@@ -57,7 +57,7 @@ The salt is added to the first block of tokens when computing the cache lookup k
 
 With this mechanism, a user can only access the cache in follow-up requests when providing the same cache salt. An attacker who doesn't know the secret salt won't get any cache hits and therefore can't measure differences in response times. This finally allowed us to enable prompt caching.
 
-# Speed Gains
+# The Need for Speed
 With prompt caching enabled, we can accelerate AI inference for agentic workloads and improved UX. We measured the impact of prompt caching on end-to-end response times using vLLM with cache salting, a quantized Llama 3.3 70B, an NVIDIA H100 GPU with confidential computing, and requests of different lengths (1,000 tokens and 10,000 tokens). We first sent an initial request with a document in context and then a follow-up request that contains the same document, once _without caching_ and once _with caching_ enabled.
 
 <img src="../img/cache_perf.png" alt="alt text" style="max-width:480px;">
