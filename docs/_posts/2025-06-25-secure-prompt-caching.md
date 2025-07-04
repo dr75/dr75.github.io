@@ -49,7 +49,7 @@ To address the issue, we developed vLLMs [cache salting](https://github.com/vllm
 
 [^1]: Note that the cache salt here is not just a typical cryptographic salt; it also protects the contents of the prompt. For this reason, it must remain secret, unlike conventional salts that do not need to be kept confidential.
 
-<img src="../img/cache.png" alt="alt text" style="max-width:600px;">
+<img src="../img/cache.png" alt="alt text" style="max-width:100%; height:auto;">
 
 As shown in the figure above, the user provides a cache salt together with the prompt.
 For efficiency reasons, [vLLM organizes the prompt cache in blocks of tokens](https://blog.vllm.ai/2023/06/20/vllm.html) (two tokens in this example; usually longer).
