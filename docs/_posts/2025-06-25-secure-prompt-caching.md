@@ -60,7 +60,7 @@ With this mechanism, a user can only access the cache in follow-up requests when
 ## The Need for Speed
 With prompt caching enabled, we can accelerate AI inference for agentic workloads and improved UX. We measured the impact of prompt caching on end-to-end response times using vLLM with cache salting, a quantized Llama 3.3 70B, an NVIDIA H100 GPU with confidential computing, and requests of different lengths (1,000 tokens and 10,000 tokens). We first sent an initial request with a document in context and then a follow-up request that contains the same document, once _without caching_ and once _with caching_ enabled.
 
-<img src="../img/cache_perf.png" alt="alt text" style="max-width:480px;">
+<img src="../img/cache_perf.png" alt="alt text" style="max-width:100%; height:auto;">
 
 The results are striking, prompt caching minimizes response latency, especially with large contexts. Processing a document with 10,000 tokens (about 6,000 words or 12 pages of text) takes about 9 seconds without prompt caching. Every follow-up question to the model would also take 9 seconds or longer without the cache. With prompt caching enabled, this delay is eliminated by using cached attention inputs, allowing the model to start responding immediately after one second.
 
