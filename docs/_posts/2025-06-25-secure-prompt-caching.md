@@ -8,7 +8,7 @@ layout: post
 
 **LLMs are no longer stateless.** They are stateful systems that retain conversation history in memory to reduce latency. This is possible with prompt caching, a mechanism that keeps the LLM's internal state on the server in memory, thereby avoiding recomputation of the state on every request.
 
-> _Prompt caching is a performance optimization in LLM inference and is the default among service providers. It is crucial for fast responses in multi-turn conversations and agentic systems. But storing context on the server introduces a security risk._
+> _Prompt caching is a performance optimization in LLM inference and is the default among service providers. It is crucial for fast responses in multi-turn conversations and agentic systems. But storing context on the server introduces the security risk of side-channel leaks._
 
 [Privatemode](https://www.privatemode.ai/) is the first AI inference service to support prompt caching with verifiable security, thanks to [confidential computing](https://www.edgeless.systems/wiki/what-is-confidential-computing/) and public source code. In this post we explain how its done.
 
