@@ -1,5 +1,5 @@
 ---
-title: "Prevent Prompt Leakage"
+title: "Preventing Prompt Leakage via Side-Channels"
 date: 2025-06-25
 layout: post
 ---
