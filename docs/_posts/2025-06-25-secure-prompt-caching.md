@@ -1,16 +1,17 @@
 ---
-title: "Secure Prompt Caching for Fast AI Inference"
+title: "Prevent Prompt Leakage"
 date: 2025-06-25
 layout: post
 ---
 
-Large language models (LLMs) have evolved into **stateful systems that retain conversation history in memory** to deliver responses faster and more efficiently. This is possible with prompt caching, a mechanism that keeps the LLM's internal state on the server in memory, thereby avoiding recomputation of the state on every request.
+Large language models (LLMs) have become **stateful systems that retain conversation history in memory** to reduce latency. This is possible with prompt caching, a mechanism that keeps the LLM's internal state on the server in memory, thereby avoiding recomputation of the state on every request.
 
 > _Prompt caching is a performance optimization in LLM inference and is the default among service providers. It is crucial for fast responses in multi-turn conversations and agentic systems. But storing context on the server introduces a security risk._
 
 [Privatemode](https://www.privatemode.ai/) is the first AI inference service to support prompt caching with verifiable security, thanks to [confidential computing](https://www.edgeless.systems/wiki/what-is-confidential-computing/) and public source code. In this post we explain how we do it.
 
 ## Background: KV Cache and Prompt Caching
+
 The [transformer architecture](https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf) introduced [_attention_](https://en.m.wikipedia.org/wiki/Attention_(machine_learning)) as a key mechanism for the model to understand the relative importance of input tokens in LLM inference. To compute attention for a token, so called _Key_ and _Value_ vectors of all other tokens must be computed, which is the main cause of latency when processing queries with large context.
 The _Key-Value (KV) cache_ is a data structure in the inference engine for caching those vectors of all processed tokens to avoid recomputation for each newly generated token. The attention result for the next token is then computed using the cached Keys and Values of previous tokens. The current tokens' Keys and Values are appended to the cache, saving both time and compute. This allows for high generation speed and has become the state-of-the-art.
 
@@ -80,7 +81,6 @@ This flexible setup means you get all the speed and efficiency benefits of cachi
 ## Conclusion
 With confidential computing and public source code, security is verifiable by anyone. Prompt caching gives you fast responses for repeated context, but the cache must be secured. We introduced cache salting in vLLM, an open, secure, and flexible way to protect your cached prompts against timing-based attacks, also in multi-user and team settings. Combining this with confidential computing, you get _fast and secure_ AI inference.
 
-If you are running vLLM in a multi-tenant environment, we encourage you to [enable secure SHA-256 hashing](https://docs.vllm.ai/en/latest/api/vllm/config.html#vllm.config.PrefixCachingHashAlgo) for the prompt cache
-and to [use cache salting](https://docs.vllm.ai/en/stable/design/v1/prefix_caching.html) to prevent side-channel attacks. We recommend to use cache salting in any multi-tenant setup independent of confidential computing to reduce the risk of prompt leakage.
+If you're deploying vLLM in a multi-tenant environment, it's important to enable SHA-256 hashing for the prompt cache and use cache salting to guard against side-channel attacks. Even without confidential computing, cache salting provides an effective layer of isolation and can significantly reduce the risk of prompt leakage across users.
 
-And if you want a ready-to-use service that combines confidential computing and prompt caching in a secure way, then you should try [Privatemode](https://www.privatemode.ai/).
+For those looking to explore a working implementation that combines confidential computing with secure prompt caching, Privatemode offers a practical reference setup.
