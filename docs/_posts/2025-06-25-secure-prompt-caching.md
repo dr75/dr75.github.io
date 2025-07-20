@@ -5,7 +5,6 @@ layout: post
 ---
 
 > **Disclaimer:** I work at Edgeless Systems, the company behind Privatemode and some of the tech described here. Opinions are my own.
----
 
 **LLMs are no longer stateless.** They are stateful systems that retain conversation history in memory to reduce latency. This is possible with prompt caching, a mechanism that keeps the LLM's internal state on the server in memory, thereby avoiding recomputation of the state on every request.
 
